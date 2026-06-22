@@ -208,16 +208,28 @@
   }
 
   function hintHTML(family) {
-    const repeated = Array.from({ length: family.a }, () => family.b).join(" + ");
-    const compact = repeated.length > 31 ? Array.from({ length: family.b }, () => family.a).join(" + ") : repeated;
-    const title = repeated.length > 31 ? `${family.b} раз по ${family.a}` : `${family.a} раз по ${family.b}`;
+    const a = family.a;
+    const b = family.b;
+    const p = family.product;
+    const related = [];
+
+    if (a !== b) related.push(`${b} × ${a} = ${p}`);
+    related.push(`${p} ÷ ${a} = ${b}`);
+    if (a !== b) related.push(`${p} ÷ ${b} = ${a}`);
+
     return `
-      <div class="hint-card">
-        <div class="hint-icon">💡</div>
-        <div class="hint-title">${title}</div>
-        <div class="dotted"></div>
-        <div class="hint-sum">${compact}</div>
+      <div class="fact-family-card" aria-label="Связанные примеры">
+        <div class="fact-chip">Семья фактов: ${p}</div>
+        <div class="fact-main">${a} × ${b} = <span class="accent">${p}</span></div>
+        <div class="related-title">Связанные примеры</div>
+        <div class="related-list">
+          ${related.map(line => `<div class="fact-line">${highlightProduct(line, p)}</div>`).join("")}
+        </div>
       </div>`;
+  }
+
+  function highlightProduct(line, product) {
+    return line.replace(String(product), `<span class="accent">${product}</span>`);
   }
 
   function renderLearn() {
